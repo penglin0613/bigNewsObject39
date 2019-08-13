@@ -181,6 +181,21 @@
 
             });
 
+
+            //需求: 首页显示登录人信息
+            //1.一进到首页,就发送ajax请求,获取登录人的详细信息
+            $.ajax({
+                url: 'http://localhost:8080/admin/user/info',
+                success: function (backData) {
+                    if (backData.code == 200) {
+                        //2.把对应的信息填入到对应的页面标签中.
+                        $('.user_info>img').attr('src',backData.data.userPic);
+                        $('.user_info>span').html('欢迎&nbsp;&nbsp;'+backData.data.nickname);
+                        $('.user_center_link>img').attr('src',backData.data.userPic);;
+                    }
+                }
+            });
+
         });
     </script>
 </body>
