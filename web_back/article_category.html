@@ -140,7 +140,7 @@
             <td class="text-center">
                 <a href="javascript:editTr({&quot;id&quot;:&quot;2&quot;,&quot;slug&quot;:&quot;funny&quot;,&quot;name&quot;:&quot;奇趣事&quot;});"
                     class="btn btn-info btn-xs">编辑</a>
-                <a href="javascript:deleteTr( 2 );" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+                <a href="#" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -199,6 +199,34 @@
                 $('#addModal').modal('hide');
             });
 
+
+            //需求: 删除文章类别
+            //1. 给删除按钮们设置点击事件.(委托注册)
+            $('tbody').on('click', "a.btn-delete", function () {
+                var _this = $(this); //把当前点击的这个a标签给存起来
+                //2. 询问一下是否真的要删除
+                if (confirm('你真的要删除吗?')) {
+                    //3. 获取当前删除按钮身上存的id (data-id那个自定义属性保存的id)
+                    var cateId = $(this).attr('data-id');
+                    //console.log(cateId);
+                    //4. 发送ajax请求,完成删除
+                    $.ajax({
+                        type: 'post',
+                        url: 'http://127.0.0.1:8080/admin/category/delete',
+                        data: {
+                            id: cateId
+                        },
+                        success: function (backData) {
+                            if (backData.code == 204) {
+                                // 重新渲染新的数据  
+                                //getData();
+                                //直接删除dom树中的这一行是可以的.
+                                _this.parent().parent().remove();
+                            }
+                        }
+                    });
+                }
+            })
 
 
         });
