@@ -205,6 +205,42 @@
         <p>电话：0755-****888 粤ICP备*******8号</p>
     </div>
 
+    <!-- 引入模板引擎js文件 -->
+    <script src="./js/template-web.js"></script>
+    <!-- 写一个模板 -->
+    <script id="author_list" type="text/html">
+        {{data.author}} 发布于 {{data.date}}&nbsp;&nbsp;&nbsp;分类: {{data.category}}&nbsp;&nbsp;&nbsp;阅读:
+                ({{data.read}})&nbsp;&nbsp;&nbsp;评论: ({{data.comments}})
+    </script>
+    <script src="./js/jquery-1.12.4.min.js"></script>
+    <script>
+        // 入口函数
+        $(function () {
+            //需求: 显示点击过来的文章详情.
+            //1.获取点击过来的文章id
+            var id = window.location.search.split("=")[1];
+            //2.根据id获取文章详情.
+            $.ajax({
+                type: 'get',
+                url: 'http://127.0.0.1:8080/index/article',
+                data: {
+                    id: id
+                },
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        //3.把获取到的文章详情数据,填入到对应的标签中
+                        $('.article_title').text(backData.data.title);
+                        $('.article_con').html(backData.data.content);
+
+                        var resH = template('author_list',backData);
+                        $('.article_info').html(resH);
+                    }
+                }
+            });
+
+        });
+    </script>
 </body>
 
 </html>
