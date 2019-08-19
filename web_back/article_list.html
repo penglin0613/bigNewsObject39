@@ -296,7 +296,7 @@
             <td class="text-center">{{v.state}}</td>
             <td class="text-center">
                 <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
-                <a href="javascript:deleteTr( 1005 );" data-id='{{v.id}}' class="btn btn-danger btn-xs">删除</a>
+                <a href="#" data-id='{{v.id}}' class="btn btn-danger btn-xs btn-delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -323,11 +323,14 @@
 
                         //根据发送ajax请求,获取到的总页数, 来重新绘制页码条
                         var totalPages = backData.data.totalPage;
+
+                        //获取当前页码
+                        window.currentPage = $pagination.twbsPagination('getCurrentPage');
+
                         //判断, 如果发送ajax请求获取的总页数, 和刚才的总页数不等, 这个时候就要重绘页码条
                         if (totalPages != myTotalPage || isTrue == true) {
                             myTotalPage = totalPages; //把发送ajax请求获取的总页数,赋值给myTotalPage
-                            //获取当前页码
-                            var currentPage = $pagination.twbsPagination('getCurrentPage');
+
                             $pagination.twbsPagination('destroy');
                             $pagination.twbsPagination($.extend({}, defaultOpts, {
                                 startPage: 1, //始终已第一页作为开始页
@@ -375,10 +378,10 @@
             //需求: 分页
             var $pagination = $('.pagination');
             var defaultOpts = {
-                first:'首页',
-                prev:'上一页',
-                next:'下一页',
-                last:'末页',
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '末页',
                 totalPages: myTotalPage, //总页数
                 visiblePages: 5, //可见页签数
                 //什么时候执行这个方法. 单击页签的时候会触发
@@ -395,7 +398,7 @@
             //1.给筛选按钮设置点击事件.
             $('#btnSearch').on('click', function (e) {
                 e.preventDefault(); //阻止默认跳转
-                isTrue = true;//点击筛选按钮,就修改isTrue这个变量的值为true.
+                isTrue = true; //点击筛选按钮,就修改isTrue这个变量的值为true.
                 //2.获取筛选条件
                 //   修改下拉菜单的value值.
                 cateType = $('#selCategory').val(); //分类名
@@ -406,9 +409,34 @@
 
 
 
+            //需求: 文章删除
+            //1.给删除按钮们,委托注册事件.
+            $('tbody').on('click', 'a.btn-delete', function () {
+                //2.获取要删除的文章id
+                var id = $(this).attr('data-id');
+                //3.发送ajax请求,完成删除 //软删除:一般更改一个数据里的信息,表示更改了.
+                $.ajax({
+                    type: 'get',
+                    url: 'http://127.0.0.1:8080/admin/article/delete',
+                    data: {
+                        id: id
+                    },
+                    success: function (backData) {
+                        if (backData.code == 204) {
+                            //4.重新加载一下数据.
+                            getData(currentPage, cateType, cateState);
+                        }
+                    }
+                });
+            });
 
 
 
+
+
+
+
+            //计算机网络 编译原理 计算机操作系统 计算机组成原理 数据库设计和分析 数电模电
 
         });
     </script>
